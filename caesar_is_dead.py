@@ -6,7 +6,13 @@ import numpy as np
 
 
 def max_score_index(scores):
-    pass
+    h_index = -1
+    highest = -np.Infinity
+    for s in range(len(scores)):
+        if scores[s] > highest:
+            h_index = s
+            highest = scores[s]
+    return h_index
 
 
 def find_shift(character, common_character_set):
@@ -27,6 +33,11 @@ def find_permutations(cipher_text, character_set):
 
 def decrypt(cipher_text, character_set):
     scores = np.array()
+    plain_texts = find_permutations(cipher_text, character_set)
+    for pt in plain_texts:
+        scores.append(calc_score(pt))
+    index = max_score_index(scores)
+    return plain_texts[index]
 
 
 def main():
@@ -34,7 +45,8 @@ def main():
     cipher_text = ""
     character_set = ""
     # read in the character set
-    decrypt(cipher_text, character_set)
+    answer = decrypt(cipher_text, character_set)
+    print("Decrypted text: %s", answer)
 
 
 if __name__ == '__main__':
