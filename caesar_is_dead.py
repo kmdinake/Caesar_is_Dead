@@ -4,6 +4,8 @@ Using frequency analysis, attempt to decrypt any caesar's within well capabiliti
 import sys
 import numpy as np
 
+character_set = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+common_character_set = "ETAOINSRHLDCUMFPGWYBVKXJQZ";
 
 def max_score_index(scores):
     h_index = -1
@@ -15,16 +17,22 @@ def max_score_index(scores):
     return h_index
 
 
-def find_shift(character, common_character_set):
-    pass
+def find_shift(character, common_character_set, frequencies):
+        return character - common_character_set[max(frequencies)]
 
 
 def get_frequency(character, cipher_text):
-    pass
+    frequencies = np.array()
+    for i in range(len(cipher_text)):
+        for j in range(len(cipher_text)):
+            if cipher_text[i] == character[i]:
+                frequencies[i] += 1
+    return frequencies
 
 
 def get_plain_text(shift, cipher_text):
-    pass
+    for i in range(len(cipher_text)):
+        #result += character_set[i + shift]
 
 
 def find_permutations(cipher_text, character_set):
