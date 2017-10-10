@@ -17,10 +17,10 @@ def max_score_index(scores):
     return h_index
 
 
-def find_shift(char_with_max_freq, common_character_set):
+def find_shift(char_with_max_freq, common_char_set):
         global character_set
         shifts = np.array([])
-        for cl in common_character_set:
+        for cl in common_char_set:
             diff = character_set[character_set.find(char_with_max_freq) - character_set.find(cl)]
             np.append(shifts, diff)
         return shifts
@@ -44,7 +44,7 @@ def get_plain_text(shift, cipher_text):
     return result
 
 
-def find_permutations(cipher_text, character_set):
+def find_permutations(cipher_text, char_set):
     pass
 
 
@@ -58,9 +58,9 @@ def calc_score(plain_text):
     return score
 
 
-def decrypt(cipher_text, character_set):
+def decrypt(cipher_text, char_set):
     scores = np.array([])
-    plain_texts = find_permutations(cipher_text, character_set)
+    plain_texts = find_permutations(cipher_text, char_set)
     for pt in plain_texts:
         np.append(scores, calc_score(pt))
     outputs = np.array([])
@@ -74,12 +74,12 @@ def decrypt(cipher_text, character_set):
 def main():
     # read in the encrypted text
     cipher_text = "2XQM5QN7A10QYUXXU104M0P59146T1R5TM4Q5M0PNQOM4QR7X01661NQ5QQ0NA6TQM7564MXUM0S18Q40YQ06M0P2XQM5QNQ8USUXM06"
-    character_set = ""
+    char_set = ""
     # read in the character set
     try:
-        answer = decrypt(cipher_text, character_set)
+        answer = decrypt(cipher_text, char_set)
         print("Decrypted text: %s", answer)
-    except BaseException:
+    except EnvironmentError:
         print("Shucks, failed to decrypt this message... I guess Caesar still lives.")
 
 if __name__ == '__main__':
