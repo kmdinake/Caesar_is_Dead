@@ -21,18 +21,22 @@ def find_shift(character, common_character_set, frequencies):
         return character - common_character_set[max(frequencies)]
 
 
-def get_frequency(character, cipher_text):
+def get_frequency(cipher_text):
+    global character_set
     frequencies = np.array()
-    for i in range(len(cipher_text)):
-        for j in range(len(cipher_text)):
-            if cipher_text[i] == character[i]:
+    for j in range(len(character_set)):
+        for i in range(len(cipher_text)):
+            if cipher_text[i] == character_set[i]:
                 frequencies[i] += 1
     return frequencies
 
 
 def get_plain_text(shift, cipher_text):
-    for i in range(len(cipher_text)):
-        #result += character_set[i + shift]
+    result = ""
+    for c in cipher_text:
+        index = character_set.find(c)
+        result += character_set[(index + shift) % len(character_set)]
+    return result
 
 
 def find_permutations(cipher_text, character_set):
