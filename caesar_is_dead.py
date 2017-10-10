@@ -9,7 +9,7 @@ def max_score_index(scores):
     pass
 
 
-def find_shift(character, common_character_list):
+def find_shift(character, common_character_set):
     pass
 
 
@@ -21,8 +21,12 @@ def get_plain_text(shift, cipher_text):
     pass
 
 
-def decrypt(cipher_text, character_set):
+def find_permutations(cipher_text, character_set):
     pass
+
+
+def decrypt(cipher_text, character_set):
+    scores = np.array()
 
 
 def main():
