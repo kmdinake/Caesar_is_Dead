@@ -17,15 +17,20 @@ def max_score_index(scores):
     return h_index
 
 
-def find_shift(character, common_character_set, frequencies):
-        return character - common_character_set[max(frequencies)]
+def find_shift(char_with_max_freq, common_character_set):
+    global character_set
+    shifts = np.array([])
+    for cl in common_character_set:
+        difference = character_set[character_set.find(char_with_max_freq) - character_set.find(cl)]
+        np.append(shifts, difference)
 
 
-def get_frequency(character, cipher_text):
-    frequencies = np.array()
-    for i in range(len(cipher_text)):
+def get_frequency(cipher_text):
+    global character_set
+    frequencies = np.array([])
+    for i in range(len(character_set)):
         for j in range(len(cipher_text)):
-            if cipher_text[i] == character[i]:
+            if cipher_text[i] == character_set[i]:
                 frequencies[i] += 1
     return frequencies
 
