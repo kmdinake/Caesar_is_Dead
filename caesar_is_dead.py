@@ -28,7 +28,7 @@ def find_shift(char_with_max_freq, common_character_set):
 
 def get_frequency(cipher_text):
     global character_set
-    frequencies = np.array()
+    frequencies = np.array([])
     for j in range(len(character_set)):
         for i in range(len(cipher_text)):
             if cipher_text[i] == character_set[i]:
