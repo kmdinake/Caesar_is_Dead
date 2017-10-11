@@ -1,13 +1,14 @@
 """
 Using frequency analysis, attempt to decrypt any caesar's within well capabilities
 """
-import sys
 import numpy as np
 
-character_set = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-common_character_set = "ETAOINSRHLDCUMFPGWYBVKXJQZ";
 
-def max_score_index(scores):
+character_set = "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+common_character_set = "EeTtAaOoIiNnSsRrHhLlDdCcUuMmFfPpGgWwYyBbVvKkXxJjQqZz"
+
+
+def get_max_index(scores):
     h_index = -1
     highest = -np.Infinity
     for s in range(len(scores)):
@@ -17,70 +18,94 @@ def max_score_index(scores):
     return h_index
 
 
-def find_shift(char_with_max_freq, common_char_set):
-        global character_set
-        shifts = np.array([])
+def find_shifts(char_with_max_freq, char_set, common_char_set):
+        shifts = []
         for cl in common_char_set:
-            diff = character_set[character_set.find(char_with_max_freq) - character_set.find(cl)]
-            np.append(shifts, diff)
+            x = char_set.find(char_with_max_freq)
+            y = char_set.find(cl)
+            diff = x - y
+            shifts.append(diff)
         return shifts
 
 
-def get_frequency(cipher_text):
-    global character_set
-    frequencies = np.array([])
-    for j in range(len(character_set)):
+def get_frequency(cipher_text, char_set):
+    frequencies = np.zeros(len(char_set))
+    for j in range(len(char_set)):
         for i in range(len(cipher_text)):
-            if cipher_text[i] == character_set[i]:
-                frequencies[i] += 1
+            if cipher_text[i] == char_set[j]:
+                frequencies[j] += 1
     return frequencies
 
 
-def get_plain_text(shift, cipher_text):
+def get_plain_text(shift, cipher_text, char_set):
     result = ""
     for c in cipher_text:
-        index = character_set.find(c)
-        result += character_set[(index + shift) % len(character_set)]
+        index = char_set.find(c)
+        result += char_set[(index - shift) % len(char_set)]
     return result
 
 
-def find_permutations(cipher_text, char_set):
-    pass
+def find_permutations(cipher_text, char_set, common_char_set):
+    frequencies = get_frequency(cipher_text, char_set)
+    index = get_max_index(frequencies)
+    shifts = find_shifts(char_set[index], char_set, common_char_set)
+    plains = []
+    for s in shifts:
+        plains.append(get_plain_text(s, cipher_text, char_set))
+    return plains
 
 
 def calc_score(plain_text):
+    plain_text = plain_text.upper()
     my_file = open('common_3000_words.txt', 'r')
     score = 0
     for word in iter(my_file):
-        if word in plain_text:
+        word = word.upper()
+        word = word.replace('\n', '')
+        if plain_text.find(word) != -1:
             score += 1
     my_file.close()
     return score
 
 
-def decrypt(cipher_text, char_set):
-    scores = np.array([])
-    plain_texts = find_permutations(cipher_text, char_set)
+def decrypt(cipher_text, char_set, common_char_set):
+    scores = []
+    temp_scores = []
+    plain_texts = find_permutations(cipher_text, char_set, common_char_set)
     for pt in plain_texts:
-        np.append(scores, calc_score(pt))
-    outputs = np.array([])
+        temp_scores.append(calc_score(pt))
+    outputs = []
     for i in range(len(plain_texts)):
-        index = max_score_index(scores)
-        np.append(outputs, plain_texts[index])
-        scores[index] = 0
-    return outputs
+        index = get_max_index(temp_scores)
+        if index != -1:
+            outputs.append(plain_texts[index])
+            scores.append(temp_scores[index])
+            temp_scores[index] = 0
+    return outputs, scores
 
 
 def main():
+    global character_set, common_character_set
     # read in the encrypted text
     cipher_text = "2XQM5QN7A10QYUXXU104M0P59146T1R5TM4Q5M0PNQOM4QR7X01661NQ5QQ0NA6TQM7564MXUM0S18Q40YQ06M0P2XQM5QNQ8USUXM06"
-    char_set = ""
     # read in the character set
     try:
-        answer = decrypt(cipher_text, char_set)
-        print("Decrypted text: %s", answer)
+        print("\033[1;36mAttempting to decrypt...\033[0;0m")
+        answers, scores = decrypt(cipher_text, character_set, common_character_set)
+        print("Decrypted texts from most confident to the least confident:")
+        my_file = open('caesar_is_dead.txt', 'w+')
+        output_str = ""
+        for i in range(len(answers)):
+            print("\033[0;32mScore of most common english words\033[0;0m: %i" % scores[i])
+            print("\033[0;32mDecrypted text\033[0;0m: %s" % answers[i])
+            output_str += "Score of most common english words: " + str(scores[i]) + "\n"
+            output_str += "Decrypted text: " + str(answers[i]) + "\n"
+        print("\033[1;36mWriting to file: caesar_is_dead.txt\033[0;0m")
+        my_file.write(output_str)
+        my_file.close()
+        print("\033[1;36mComplete\033[0;0m")
     except EnvironmentError:
-        print("Shucks, failed to decrypt this message... I guess Caesar still lives.")
+        print("\033[1;31mShucks, failed to decrypt this message... I guess Caesar still lives.\033[0;0m ")
 
 if __name__ == '__main__':
     main()
